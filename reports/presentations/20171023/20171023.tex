@@ -45,24 +45,33 @@
 \maketitle
 
 %-------------------------------------------------
-\begin{frame}{DBC Code}
-	\begin{alertblock}{DBC Components}
-	\begin{center}
-		\includegraphics[width=.7\textwidth]{dbc_components.jpeg}
-	\end{center}
-    \end{alertblock}
-\end{frame}
-
-%-------------------------------------------------
 \begin{frame}{Tasks}
 	\begin{alertblock}{Problem Analysis}
 	\begin{itemize}
+	\item \textbf{DBC}: set of nodes that moves base of robot to given pose in ref. frame
+	\item Nodes perform small tasks which are coordinated by another node.
+	\item Problem
+	\begin{itemize}
+	\item Each node takes up CPU resources even when it is idle.
+	\end{itemize}
+	\item Solution
+	\begin{itemize}
 	\item Merge all nodes into a single node maintaining the modularity of the code.
+	\end{itemize}
 	\end{itemize}
     \end{alertblock}
     
     \begin{alertblock}{Code Run}
     Working example of project.
+    \end{alertblock}
+\end{frame}
+
+%-------------------------------------------------
+\begin{frame}{DBC Code}
+	\begin{alertblock}{DBC Components}
+	\begin{center}
+		\includegraphics[width=.7\textwidth]{dbc_components.jpeg}
+	\end{center}
     \end{alertblock}
 \end{frame}
 
