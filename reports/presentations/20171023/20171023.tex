@@ -8,6 +8,7 @@
 \usepackage[export]{adjustbox}
 \usepackage{amsmath}
 \usepackage{hyperref}
+\usepackage{listings}
 
 %-------------------------------------------------
 %   COMMON INFO
@@ -45,8 +46,10 @@
 
 %-------------------------------------------------
 \begin{frame}{DBC Code}
-	\begin{alertblock}{Insert UML diagrams}
-    	Here
+	\begin{alertblock}{DBC Components}
+	\begin{center}
+		\includegraphics[width=.7\textwidth]{dbc_components.jpeg}
+	\end{center}
     \end{alertblock}
 \end{frame}
 
@@ -54,33 +57,39 @@
 \begin{frame}{Tasks}
 	\begin{alertblock}{Problem Analysis}
 	\begin{itemize}
-	\item What are the problems/challenges in the task?\\
-    \item Which software will be required to solve the task?\\
-    \item What are requirements for the software?
+	\item Merge all nodes into a single node maintaining the modularity of the code.
 	\end{itemize}
     \end{alertblock}
     
     \begin{alertblock}{Code Run}
-    Show a working minimal example of project description.
+    Working example of project.
     \end{alertblock}
 \end{frame}
 
 %-------------------------------------------------
 \begin{frame}{DBC project goals}
 	\begin{alertblock}{Long term goals}
-    	Insert here.
+    	Take all the DBC components and merge them into a single node.
     \end{alertblock}
 \end{frame}
 
 %-------------------------------------------------
 \begin{frame}{DBC immediate goals}
 	\begin{alertblock}{Tasks for next week}
-	Change order depending on tasks, if necessary.
+	Understanding component details and their connectivity
     	\begin{itemize}
-    	\item {\color{OliveGreen}{Aaquib}}:
-    	\item {\color{OliveGreen}{Pranjal}}:
-    	\item {\color{OliveGreen}{Ramit}}:
-    	\item {\color{OliveGreen}{Zahid}}:
+    	\item {\color{OliveGreen}{Aaqib}}:\\
+    	mcr\_direct\_base\_controller:direct\_base\_controller\_coordinator\_node \\
+    	mcr\_common\_converters:transform\_to\_pose\_converter\_node
+    	\item {\color{OliveGreen}{Pranjal}}:\\
+    	mcr\_manipulation\_measurers:component\_wise\_pose\_error\_calculator\_node \\
+    	mcr\_geometric\_relation\_monitors:component\_wise\_pose\_error\_monitor\_node
+    	\item {\color{OliveGreen}{Ramit}}:\\
+    	mcr\_twist\_controller:twist\_controller\_node\\
+    	mcr\_twist\_limiter:twist\_limiter\_node
+    	\item {\color{OliveGreen}{Zahid}}:\\
+    	mcr\_twist\_synchronizer:twist\_synchronizer\_node \\
+    	topic\_tools:transform
     	\end{itemize}
     \end{alertblock}
 \end{frame}
