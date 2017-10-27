@@ -1,14 +1,20 @@
-import zmq
-import random
-import sys
+import zmq, sys
 import time
+from zmq_utils import get_ip_address
 
-port = "5557"
+if len(sys.argv) == 2:
+    ip = sys.argv[1]
+    port = sys.argv[2]
+else:
+    port = "5557"
+    ip = get_ip_address()
+
 context = zmq.Context()
 socket = context.socket(zmq.PAIR)
-socket.connect("tcp://10.0.0.9:%s" % port)
+socket.connect("tcp://%s:%s" % (ip, port))
 
 while True:
     msg = socket.recv()
     print msg
     time.sleep(1)
+context.destroy()
