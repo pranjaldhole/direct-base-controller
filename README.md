@@ -1,5 +1,4 @@
-# Software Developmet Project
+# Software Development Project
 ## Direct Base Controller (DBC)
 
-+ [Reports](reports)
 + [Code development](src)
