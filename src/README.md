@@ -1,8 +1,12 @@
 ### Direct Base Controller: Merged Nodes
 
+In order to deactive `direct_base_controller` from `mas_industrial_robotics`,
+add `CATKIN_IGNORE` as empty file in the `mas_industrial_robotics/mit_navigation/direct_base_controller/`
+and rebuild the catkin workspace with `catkin build`
+
 ##### To Do: Merge Nodes
 
-+ mcr_direct_base_controller:direct_base_controller_coordinator_node
++ ~~mcr_direct_base_controller:direct_base_controller_coordinator_node~~
 + mcr_common_converters:transform_to_pose_converter_node
 + mcr_manipulation_measurers:component_wise_pose_error_calculator_node
 + mcr_geometric_relation_monitors:component_wise_pose_error_monitor_node
