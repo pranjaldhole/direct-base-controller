@@ -8,8 +8,8 @@
 ##### Activating DBC from repo
 In order to deactive `direct_base_controller` from `mas_industrial_robotics`,
 1. add `CATKIN_IGNORE` as empty file in the `mas_industrial_robotics/mit_navigation/direct_base_controller/`
-2. delete `build`, `devel` and `logs` in your workspace.
-3. rebuild the catkin workspace with `catkin build`
+2. cd to the package in the repo `cd group3/src/group3_direct_base_controller`
+3. build the package with `catkin build --this`
 
 ##### To Do: Merge Nodes
 
