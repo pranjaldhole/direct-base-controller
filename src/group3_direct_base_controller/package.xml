@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>mir_direct_base_controller</name>
+  <name>group3_direct_base_controller</name>
   <version>0.1.0</version>
   <description>
     This package provides launch files for running the direct base controller on the youbot

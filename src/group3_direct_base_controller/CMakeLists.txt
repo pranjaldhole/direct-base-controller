@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(mir_direct_base_controller)
+project(group3_direct_base_controller)
 
 find_package(catkin REQUIRED
 )
