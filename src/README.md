@@ -1,9 +1,12 @@
 ### Direct Base Controller: Merged Nodes
 
++ Clone the repo in your `catkin_workspace/src`.
+
 ##### Activating DBC from repo
 In order to deactive `direct_base_controller` from `mas_industrial_robotics`,
-add `CATKIN_IGNORE` as empty file in the `mas_industrial_robotics/mit_navigation/direct_base_controller/`
-and rebuild the catkin workspace with `catkin build`
+1. add `CATKIN_IGNORE` as empty file in the `mas_industrial_robotics/mit_navigation/direct_base_controller/`
+2. delete `build`, `devel` and `logs` in your workspace.
+3. rebuild the catkin workspace with `catkin build`
 
 ##### To Do: Merge Nodes
 
