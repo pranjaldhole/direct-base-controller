@@ -86,7 +86,7 @@
         <node pkg="topic_tools" type="transform" name="twist_transform" output="screen"
               args="/mcr_navigation/direct_base_controller/twist_synchronizer/synchronized_twist $(arg cmd_vel_out) geometry_msgs/Twist 'm.twist' --wait-for-start" />
 
-        <node pkg="mcr_direct_base_controller" type="direct_base_controller_coordinator_node" name="coordinator" output="screen">
+        <node pkg="group3_direct_base_controller" type="direct_base_controller_coordinator_node" name="coordinator" output="screen">
 
             <remap from="~pose_converter_event_in" to="pose_converter/event_in" />
             <remap from="~pose_error_calculator_event_in" to="pose_error_calculator/event_in" />
