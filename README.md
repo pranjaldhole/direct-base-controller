@@ -3,14 +3,28 @@
 
 ### Direct Base Controller: Merged Nodes
 
-+ Clone the repo in your `catkin_workspace/src`.
+1. Clone the repo in your `catkin_workspace/src`.
+2.  Disable following packages
+	* mir_direct_base_controller
+	* mcr_direct_base_controller
+	* mcr_common_converters
 
-##### Activating DBC from repo
-In order to deactive `direct_base_controller` from `mas_industrial_robotics`,
-1. add `CATKIN_IGNORE` as empty file in the `mas_industrial_robotics/mit_navigation/direct_base_controller/`
-2. cd to the package in the repo `cd group3/src/group3_direct_base_controller`
-3. build the package with `catkin build --this`
-4. source the bashrc file with `. ~/.bashrc`
+	Use following command to disable a package
+	```
+	roscd package_name
+	touch CATKIN_IGNORE
+	```
+3.  Delete old build files before new build. Go to the *ros*  directory and execute.
+	```
+	catkin build
+	source ~/.bashrc
+	```
+4.  Use *group3_direct_base_controller* package to launch.
+	```
+	roslaunch group3_direct_base_controller direct_base_controller.launch
+	roslaunch group3_direct_base_controller pose_mock_up_gui.launch
+	roslaunch group3_direct_base_controller event_gui.launch
+	```
 
 ##### To Do: Merge Nodes
 
@@ -25,5 +39,3 @@ In order to deactive `direct_base_controller` from `mas_industrial_robotics`,
 ##### Nodes communication
 To check how nodes communicate with each other, run the simulation and run `rqt_graph`.
 The GUI will show you a graph of how nodes talk to each other.
-
-<!--- End of script --->
