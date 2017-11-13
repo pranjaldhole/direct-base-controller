@@ -4,19 +4,9 @@
     <arg name="cmd_vel_out" default="/cmd_vel" />
 
     <group ns="mcr_navigation/direct_base_controller">
-
-        <node pkg="group3_direct_base_controller" type="transform_to_pose_converter_node" name="pose_converter" output="screen">
-
-            <!-- the cycle rate of the node (in Hz) -->
-            <param name="loop_rate" type="double" value="100.0"/>
-
-            <param name="reference_frame" type="str" value="odom"/>
-            <param name="target_frame" type="str" value="base_link"/>
-        </node>
-
         <node pkg="mcr_manipulation_measurers" type="component_wise_pose_error_calculator_node" name="pose_error_calculator" output="screen">
 
-            <remap from="~pose_1" to="pose_converter/converted_pose" />
+            <remap from="~pose_1" to="coordinator/converted_pose" />
             <remap from="~pose_2" to="/mcr_navigation/direct_base_controller/input_pose" />
 
             <!-- the cycle rate of the node (in Hz) -->
@@ -87,8 +77,6 @@
               args="/mcr_navigation/direct_base_controller/twist_synchronizer/synchronized_twist $(arg cmd_vel_out) geometry_msgs/Twist 'm.twist' --wait-for-start" />
 
         <node pkg="group3_direct_base_controller" type="direct_base_controller_coordinator_node" name="coordinator" output="screen">
-
-            <remap from="~pose_converter_event_in" to="pose_converter/event_in" />
             <remap from="~pose_error_calculator_event_in" to="pose_error_calculator/event_in" />
             <remap from="~pose_error_monitor_event_in" to="pose_error_monitor/event_in" />
             <remap from="~twist_controller_event_in" to="twist_controller/event_in" />
@@ -104,6 +92,11 @@
             <!-- Maximum linear velocities in the axes X, Y and Z (in meters/second) -->
             <param name="angular_synchronization" type="bool" value="true"/>
 
+            <!-- ############# Parameters for transform_to_pose_converter_node ########### -->
+            <param name="wait_for_transform" type="double" value="0.1"/>
+            <param name="reference_frame" type="str" value="odom"/>
+            <param name="target_frame" type="str" value="base_link"/>
+            <!-- ############# Parameters for transform_to_pose_converter_node ########### -->
         </node>
 
     </group>
