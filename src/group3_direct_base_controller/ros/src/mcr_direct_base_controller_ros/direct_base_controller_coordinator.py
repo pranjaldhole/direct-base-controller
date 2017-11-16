@@ -61,6 +61,10 @@ class DirectBaseControllerCoordinator(object):
         rospy.Subscriber("~event_in", std_msgs.msg.String, self.event_in_cb)
         rospy.Subscriber("~pose_monitor_feedback", mcr_monitoring_msgs.msg.ComponentWisePoseErrorMonitorFeedback,
                          self.pose_monitor_feedback_cb)
+<<<<<<< HEAD
+=======
+        rospy.Subscriber('~pose_1', geometry_msgs.msg.PoseStamped, self.pose_1_cb)
+>>>>>>> ab45777db310826f7bc6218320b2bb2cef181749
         rospy.Subscriber('~pose_2', geometry_msgs.msg.PoseStamped, self.pose_2_cb)
 
         # Setup for component_wise_pose_error_calculator
@@ -77,6 +81,21 @@ class DirectBaseControllerCoordinator(object):
 
         """
         self.event = msg.data
+# callbacks for component_wise_pose_error_calculator node----
+    def pose_1_cb(self, msg):
+        """
+        Obtains the first pose.
+
+        """
+        self.pose_1 = msg
+
+    def pose_2_cb(self, msg):
+        """
+        Obtains the second pose.
+
+        """
+        self.pose_2 = msg
+#-------------------------------------------------------------
 
 # callbacks for component_wise_pose_error_calculator node----
     def pose_2_cb(self, msg):
@@ -161,9 +180,17 @@ class DirectBaseControllerCoordinator(object):
 
                 return 'INIT'
 
+<<<<<<< HEAD
         # Get converted pose and calculate the pose error and publish
         converted_pose = self.transform_to_pose_converter.get_converted_pose()
         if(converted_pose != None):
+=======
+        # Get converted pose and publish
+        converted_pose = self.transform_to_pose_converter.get_converted_pose()
+        if(converted_pose != None):
+            #self.converted_pose.publish(converted_pose)
+            # Get pose error and publish
+>>>>>>> ab45777db310826f7bc6218320b2bb2cef181749
             self.pose_1 = converted_pose
             pose_error = self.component_wise_pose_error_calculator.get_component_wise_pose_error(self.pose_1, self.pose_2)
             if (pose_error !=None):
