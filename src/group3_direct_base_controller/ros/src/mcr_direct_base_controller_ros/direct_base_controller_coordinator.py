@@ -4,7 +4,6 @@
 This component moves the mobile base in Cartesian space until a pose is reached.
 
 It uses the following nodes:
-  * (mcr_common_converters) transform_to_pose_converter.
   * (mcr_manipulation_measurers) component_wise_pose_error_calculator.
   * (mcr_geometric_relation_monitors) component_wise_pose_error_monitor.
   * (mcr_twist_controller) twist_controller.
@@ -20,7 +19,9 @@ import rospy
 import std_msgs.msg
 import geometry_msgs.msg
 import mcr_monitoring_msgs.msg
+import mcr_manipulation_msgs.msg
 from transform_to_pose_converter import TransformToPoseConverter
+from component_wise_pose_error_calculator import ComponentWisePoseErrorCalculator
 
 
 class DirectBaseControllerCoordinator(object):
@@ -33,6 +34,8 @@ class DirectBaseControllerCoordinator(object):
         self.started_components = False
         self.event = None
         self.pose_monitor_feedback = None
+        self.pose_1 = None
+        self.pose_2 = None
 
         # node cycle rate (in hz)
         self.loop_rate = rospy.Rate(rospy.get_param('~loop_rate', 100.0))
@@ -40,9 +43,6 @@ class DirectBaseControllerCoordinator(object):
         # publishers
         self.event_out = rospy.Publisher("~event_out", std_msgs.msg.String, queue_size=1)
 
-        self.pose_error_calculator_event_in = rospy.Publisher(
-            '~pose_error_calculator_event_in', std_msgs.msg.String, latch=True, queue_size=1
-        )
         self.pose_error_monitor_event_in = rospy.Publisher(
             '~pose_error_monitor_event_in', std_msgs.msg.String, latch=True, queue_size=1
         )
@@ -61,13 +61,15 @@ class DirectBaseControllerCoordinator(object):
         rospy.Subscriber("~event_in", std_msgs.msg.String, self.event_in_cb)
         rospy.Subscriber("~pose_monitor_feedback", mcr_monitoring_msgs.msg.ComponentWisePoseErrorMonitorFeedback,
                          self.pose_monitor_feedback_cb)
+        rospy.Subscriber('~pose_2', geometry_msgs.msg.PoseStamped, self.pose_2_cb)
 
-        # Setup for transform_to_pose_converter
-        # TODO - publisher should be removed afer pose_error_calculator is merged
-        self.converted_pose = rospy.Publisher(
-            '~converted_pose', geometry_msgs.msg.PoseStamped, queue_size=1
+        # Setup for component_wise_pose_error_calculator
+        # TODO - publisher should be removed afer pose_error_monitor is merged
+        self.pose_error = rospy.Publisher(
+            '~pose_error', mcr_manipulation_msgs.msg.ComponentWiseCartesianDifference, queue_size=5
         )
         self.transform_to_pose_converter = TransformToPoseConverter();
+        self.component_wise_pose_error_calculator = ComponentWisePoseErrorCalculator();
 
     def event_in_cb(self, msg):
         """
@@ -75,6 +77,15 @@ class DirectBaseControllerCoordinator(object):
 
         """
         self.event = msg.data
+
+# callbacks for component_wise_pose_error_calculator node----
+    def pose_2_cb(self, msg):
+        """
+        Obtains the second pose.
+
+        """
+        self.pose_2 = msg
+#-------------------------------------------------------------
 
     def pose_monitor_feedback_cb(self, msg):
         """
@@ -149,12 +160,15 @@ class DirectBaseControllerCoordinator(object):
                 self.publish_zero_velocities()
 
                 return 'INIT'
-        
-        # Get converted pose and publish
+
+        # Get converted pose and calculate the pose error and publish
         converted_pose = self.transform_to_pose_converter.get_converted_pose()
         if(converted_pose != None):
-            self.converted_pose.publish(converted_pose)
-        
+            self.pose_1 = converted_pose
+            pose_error = self.component_wise_pose_error_calculator.get_component_wise_pose_error(self.pose_1, self.pose_2)
+            if (pose_error !=None):
+                self.pose_error.publish(pose_error)
+
         return 'RUNNING'
 
     def publish_zero_velocities(self):
@@ -172,8 +186,8 @@ class DirectBaseControllerCoordinator(object):
         """
         if event == 'start' and not (self.started_components):
             self.transform_to_pose_converter.event = 'e_start'
-            
-            self.pose_error_calculator_event_in.publish('e_start')
+            self.component_wise_pose_error_calculator.monitor_event = 'e_start'
+
             self.pose_error_monitor_event_in.publish('e_start')
             self.twist_controller_event_in.publish('e_start')
             self.twist_limiter_event_in.publish('e_start')
@@ -183,8 +197,8 @@ class DirectBaseControllerCoordinator(object):
 
         elif event == 'stop':
             self.transform_to_pose_converter.event = 'e_stop'
+            self.component_wise_pose_error_calculator.monitor_event = 'e_stop'
 
-            self.pose_error_calculator_event_in.publish('e_stop')
             self.pose_error_monitor_event_in.publish('e_stop')
             self.twist_controller_event_in.publish('e_stop')
             self.twist_limiter_event_in.publish('e_stop')

@@ -4,19 +4,10 @@
     <arg name="cmd_vel_out" default="/cmd_vel" />
 
     <group ns="mcr_navigation/direct_base_controller">
-        <node pkg="mcr_manipulation_measurers" type="component_wise_pose_error_calculator_node" name="pose_error_calculator" output="screen">
-
-            <remap from="~pose_1" to="coordinator/converted_pose" />
-            <remap from="~pose_2" to="/mcr_navigation/direct_base_controller/input_pose" />
-
-            <!-- the cycle rate of the node (in Hz) -->
-            <param name="loop_rate" type="double" value="100"/>
-        </node>
-
 
         <node pkg="mcr_geometric_relation_monitors" type="component_wise_pose_error_monitor_node" name="pose_error_monitor" output="screen">
 
-            <remap from="~pose_error" to="pose_error_calculator/pose_error" />
+            <remap from="~pose_error" to="coordinator/pose_error" />
 
             <!-- the cycle rate of the node (in Hz) -->
             <param name="loop_rate" type="double" value="100.0" />
@@ -29,7 +20,7 @@
 
         <node pkg="mcr_twist_controller" type="twist_controller_node" name="twist_controller" output="screen">
 
-            <remap from="~pose_error" to="pose_error_calculator/pose_error" />
+            <remap from="~pose_error" to="coordinator/pose_error" />
 
             <!-- the cycle rate of the node (in Hz) -->
             <param name="loop_rate" type="double" value="100.0"/>
@@ -62,7 +53,7 @@
         <node pkg="mcr_twist_synchronizer" type="twist_synchronizer_node" name="twist_synchronizer" output="screen">
 
             <remap from="~twist" to="twist_limiter/limited_twist" />
-            <remap from="~pose_error" to="pose_error_calculator/pose_error" />
+            <remap from="~pose_error" to="coordinator/pose_error" />
             <!--remap from="~synchronized_twist" to="/cmd_vel_prio_low" /-->
 
             <!-- the cycle rate of the node (in Hz) -->
@@ -77,11 +68,12 @@
               args="/mcr_navigation/direct_base_controller/twist_synchronizer/synchronized_twist $(arg cmd_vel_out) geometry_msgs/Twist 'm.twist' --wait-for-start" />
 
         <node pkg="group3_direct_base_controller" type="direct_base_controller_coordinator_node" name="coordinator" output="screen">
-            <remap from="~pose_error_calculator_event_in" to="pose_error_calculator/event_in" />
+            <remap from="~pose_error" to="coordinator/pose_error" />
             <remap from="~pose_error_monitor_event_in" to="pose_error_monitor/event_in" />
             <remap from="~twist_controller_event_in" to="twist_controller/event_in" />
             <remap from="~twist_limiter_event_in" to="twist_limiter/event_in" />
             <remap from="~twist_synchronizer_event_in" to="twist_synchronizer/event_in" />
+            <remap from="~pose_2" to="/mcr_navigation/direct_base_controller/input_pose" />
 
             <remap from="~pose_monitor_feedback" to="pose_error_monitor/feedback" />
             <remap from="~twist" to="$(arg cmd_vel_out)" />
