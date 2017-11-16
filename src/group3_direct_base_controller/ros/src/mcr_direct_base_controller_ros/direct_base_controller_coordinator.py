@@ -34,7 +34,6 @@ class DirectBaseControllerCoordinator(object):
         self.started_components = False
         self.event = None
         self.pose_monitor_feedback = None
-        self.pose_1 = None
         self.pose_2 = None
 
         # node cycle rate (in hz)
@@ -77,21 +76,6 @@ class DirectBaseControllerCoordinator(object):
 
         """
         self.event = msg.data
-# callbacks for component_wise_pose_error_calculator node----
-    def pose_1_cb(self, msg):
-        """
-        Obtains the first pose.
-
-        """
-        self.pose_1 = msg
-
-    def pose_2_cb(self, msg):
-        """
-        Obtains the second pose.
-
-        """
-        self.pose_2 = msg
-#-------------------------------------------------------------
 
 # callbacks for component_wise_pose_error_calculator node----
     def pose_2_cb(self, msg):
@@ -179,8 +163,7 @@ class DirectBaseControllerCoordinator(object):
         # Get converted pose and calculate the pose error and publish
         converted_pose = self.transform_to_pose_converter.get_converted_pose()
         if(converted_pose != None):
-            self.pose_1 = converted_pose
-            pose_error = self.component_wise_pose_error_calculator.get_component_wise_pose_error(self.pose_1, self.pose_2)
+            pose_error = self.component_wise_pose_error_calculator.get_component_wise_pose_error(converted_pose, self.pose_2)
             if (pose_error !=None):
                 self.pose_error.publish(pose_error)
 
