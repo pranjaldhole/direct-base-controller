@@ -24,6 +24,7 @@ catkin_package(
     mcr_twist_limiter
     mcr_twist_synchronizer
     mcr_manipulation_measurers
+    mcr_manipulation_msgs
 )
 
 include_directories(
@@ -33,7 +34,6 @@ include_directories(
 ### INSTALLS
 install(PROGRAMS
   ros/scripts/direct_base_controller_coordinator_node
-  ros/scripts/transform_to_pose_converter_node
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

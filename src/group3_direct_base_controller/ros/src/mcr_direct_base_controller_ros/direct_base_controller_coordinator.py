@@ -22,6 +22,7 @@ import mcr_monitoring_msgs.msg
 import mcr_manipulation_msgs.msg
 from transform_to_pose_converter import TransformToPoseConverter
 from component_wise_pose_error_calculator import ComponentWisePoseErrorCalculator
+from twist_controller import TwistController
 
 
 class DirectBaseControllerCoordinator(object):
@@ -45,9 +46,6 @@ class DirectBaseControllerCoordinator(object):
         self.pose_error_monitor_event_in = rospy.Publisher(
             '~pose_error_monitor_event_in', std_msgs.msg.String, latch=True, queue_size=1
         )
-        self.twist_controller_event_in = rospy.Publisher(
-            '~twist_controller_event_in', std_msgs.msg.String, latch=True, queue_size=1
-        )
         self.twist_limiter_event_in = rospy.Publisher(
             '~twist_limiter_event_in', std_msgs.msg.String, latch=True, queue_size=1
         )
@@ -67,8 +65,14 @@ class DirectBaseControllerCoordinator(object):
         self.pose_error = rospy.Publisher(
             '~pose_error', mcr_manipulation_msgs.msg.ComponentWiseCartesianDifference, queue_size=5
         )
+        # TODO - Remove after twist_limiter is merged
+        self.controlled_twist = rospy.Publisher(
+            '~controlled_twist', geometry_msgs.msg.TwistStamped, queue_size=5
+        )
+
         self.transform_to_pose_converter = TransformToPoseConverter();
         self.component_wise_pose_error_calculator = ComponentWisePoseErrorCalculator();
+        self.twist_controller = TwistController();
 
     def event_in_cb(self, msg):
         """
@@ -165,7 +169,11 @@ class DirectBaseControllerCoordinator(object):
         if(converted_pose != None):
             pose_error = self.component_wise_pose_error_calculator.get_component_wise_pose_error(converted_pose, self.pose_2)
             if (pose_error !=None):
-                self.pose_error.publish(pose_error)
+                self.pose_error.publish(pose_error) # TODO - Stop publishing after pose_error_monitor is merged
+
+                cartesian_velocity = self.twist_controller.get_cartesian_velocity(pose_error)
+                if cartesian_velocity:
+                    self.controlled_twist.publish(cartesian_velocity) #TODO - Stop publishing after twist_limiter is merged
 
         return 'RUNNING'
 
@@ -187,7 +195,6 @@ class DirectBaseControllerCoordinator(object):
             self.component_wise_pose_error_calculator.monitor_event = 'e_start'
 
             self.pose_error_monitor_event_in.publish('e_start')
-            self.twist_controller_event_in.publish('e_start')
             self.twist_limiter_event_in.publish('e_start')
             self.twist_synchronizer_event_in.publish('e_start')
 
@@ -198,7 +205,6 @@ class DirectBaseControllerCoordinator(object):
             self.component_wise_pose_error_calculator.monitor_event = 'e_stop'
 
             self.pose_error_monitor_event_in.publish('e_stop')
-            self.twist_controller_event_in.publish('e_stop')
             self.twist_limiter_event_in.publish('e_stop')
             self.twist_synchronizer_event_in.publish('e_stop')
 

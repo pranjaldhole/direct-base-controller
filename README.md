@@ -9,6 +9,7 @@
 	* mcr_direct_base_controller
 	* mcr_common_converters
 	* mcr_manipulation_measurers
+	* mcr_twist_controller
 
 	Use following command to disable a package
 	```
@@ -34,7 +35,7 @@
 + ~~mcr_manipulation_measurers:component_wise_pose_error_calculator_node~~
 
 + mcr_geometric_relation_monitors:component_wise_pose_error_monitor_node
-+ mcr_twist_controller:twist_controller_node
++ ~~mcr_twist_controller:twist_controller_node~~
 + mcr_twist_limiter:twist_limiter_node
 + mcr_twist_synchronizer:twist_synchronizer_node
 
