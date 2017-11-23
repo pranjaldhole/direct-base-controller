@@ -42,6 +42,23 @@ class TwistController(object):
         self.pitch_controller = pid_controller.p_controller(self.p_gain_pitch)
         self.yaw_controller = pid_controller.p_controller(self.p_gain_yaw)
 
+    def set_parameters(self, p_gain_x, p_gain_y, p_gain_z, p_gain_roll, p_gain_pitch, p_gain_yaw):
+        # proportional gains for the Cartesian linear velocities
+        self.p_gain_x = p_gain_x
+        self.p_gain_y = p_gain_y
+        self.p_gain_z = p_gain_z
+        self.p_gain_roll = p_gain_roll
+        self.p_gain_pitch = p_gain_pitch
+        self.p_gain_yaw = p_gain_yaw
+
+        # create controllers
+        self.x_controller = pid_controller.p_controller(self.p_gain_x)
+        self.y_controller = pid_controller.p_controller(self.p_gain_y)
+        self.z_controller = pid_controller.p_controller(self.p_gain_z)
+        self.roll_controller = pid_controller.p_controller(self.p_gain_roll)
+        self.pitch_controller = pid_controller.p_controller(self.p_gain_pitch)
+        self.yaw_controller = pid_controller.p_controller(self.p_gain_yaw)
+
     def get_cartesian_velocity(self, pose_error):
         """
         Calculates a synchronized Cartesian velocity, based on a position error,

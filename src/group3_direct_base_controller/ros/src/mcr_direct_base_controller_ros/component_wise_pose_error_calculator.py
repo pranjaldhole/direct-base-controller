@@ -38,7 +38,7 @@ class ComponentWisePoseErrorCalculator(object):
         # how long to wait for transform (in seconds)
         self.wait_for_transform = rospy.get_param('~wait_for_transform', 0.1)
 
-    def set_parameters(linear_offset, wait_for_transform):
+    def set_parameters(self, linear_offset, wait_for_transform):
         """
         Helper method for dynamic reconfiguration
         """
