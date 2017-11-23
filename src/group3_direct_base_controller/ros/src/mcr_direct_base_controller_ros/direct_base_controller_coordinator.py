@@ -4,10 +4,7 @@
 This component moves the mobile base in Cartesian space until a pose is reached.
 
 It uses the following nodes:
-  * (mcr_manipulation_measurers) component_wise_pose_error_calculator.
   * (mcr_geometric_relation_monitors) component_wise_pose_error_monitor.
-  * (mcr_twist_controller) twist_controller.
-  * (mcr_twist_limiter) twist_limiter.
   * (mcr_twist_synchronizer) twist_synchronizer.
 
 The component serves as a configurator/coordinator, i.e. it sets the required
@@ -23,6 +20,7 @@ import mcr_manipulation_msgs.msg
 from transform_to_pose_converter import TransformToPoseConverter
 from component_wise_pose_error_calculator import ComponentWisePoseErrorCalculator
 from twist_controller import TwistController
+from twist_limiter import TwistLimiter
 
 
 class DirectBaseControllerCoordinator(object):
@@ -46,9 +44,6 @@ class DirectBaseControllerCoordinator(object):
         self.pose_error_monitor_event_in = rospy.Publisher(
             '~pose_error_monitor_event_in', std_msgs.msg.String, latch=True, queue_size=1
         )
-        self.twist_limiter_event_in = rospy.Publisher(
-            '~twist_limiter_event_in', std_msgs.msg.String, latch=True, queue_size=1
-        )
         self.twist_synchronizer_event_in = rospy.Publisher(
             '~twist_synchronizer_event_in', std_msgs.msg.String, latch=True, queue_size=1
         )
@@ -65,14 +60,15 @@ class DirectBaseControllerCoordinator(object):
         self.pose_error = rospy.Publisher(
             '~pose_error', mcr_manipulation_msgs.msg.ComponentWiseCartesianDifference, queue_size=5
         )
-        # TODO - Remove after twist_limiter is merged
-        self.controlled_twist = rospy.Publisher(
-            '~controlled_twist', geometry_msgs.msg.TwistStamped, queue_size=5
+        # TODO - Remove after twist_synchronizer is merged
+        self.limited_twist = rospy.Publisher(
+            '~limited_twist', geometry_msgs.msg.TwistStamped, queue_size=5
         )
 
         self.transform_to_pose_converter = TransformToPoseConverter();
         self.component_wise_pose_error_calculator = ComponentWisePoseErrorCalculator();
         self.twist_controller = TwistController();
+        self.twist_limiter = TwistLimiter();
 
     def event_in_cb(self, msg):
         """
@@ -173,7 +169,9 @@ class DirectBaseControllerCoordinator(object):
 
                 cartesian_velocity = self.twist_controller.get_cartesian_velocity(pose_error)
                 if cartesian_velocity:
-                    self.controlled_twist.publish(cartesian_velocity) #TODO - Stop publishing after twist_limiter is merged
+                    limited_twist = self.twist_limiter.get_limited_twist(cartesian_velocity)
+                    if limited_twist:
+                        self.limited_twist.publish(limited_twist) # TODO Remove after merging Twist synchronizer
 
         return 'RUNNING'
 
@@ -195,7 +193,6 @@ class DirectBaseControllerCoordinator(object):
             self.component_wise_pose_error_calculator.monitor_event = 'e_start'
 
             self.pose_error_monitor_event_in.publish('e_start')
-            self.twist_limiter_event_in.publish('e_start')
             self.twist_synchronizer_event_in.publish('e_start')
 
             self.started_components = True
@@ -205,7 +202,6 @@ class DirectBaseControllerCoordinator(object):
             self.component_wise_pose_error_calculator.monitor_event = 'e_stop'
 
             self.pose_error_monitor_event_in.publish('e_stop')
-            self.twist_limiter_event_in.publish('e_stop')
             self.twist_synchronizer_event_in.publish('e_stop')
 
             self.started_components = False
