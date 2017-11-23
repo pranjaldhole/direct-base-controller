@@ -32,7 +32,7 @@ class TransformToPoseConverter(object):
         # how long to wait for transform (in seconds)
         self.wait_for_transform = rospy.get_param('~wait_for_transform', 0.1)
 
-    def set_parameters(reference_frame, target_frame, wait_for_transform):
+    def set_parameters(self, reference_frame, target_frame, wait_for_transform):
         """
         Helper method for dynamic reconfiguration
         """
