@@ -31,6 +31,17 @@ class TwistLimiter(object):
         self.max_velocity_pitch = rospy.get_param('~max_velocity_pitch', 0.1)
         self.max_velocity_yaw = rospy.get_param('~max_velocity_yaw', 0.1)
 
+    def set_parameters(self, max_velocity_x, max_velocity_y, max_velocity_z, max_velocity_yaw, max_velocity_pitch, max_velocity_roll):
+        """
+        Helper method for dynamic reconfiguration
+        """
+        self.max_velocity_x = max_velocity_x
+        self.max_velocity_y = max_velocity_y
+        self.max_velocity_z = max_velocity_z
+        self.max_velocity_yaw = max_velocity_yaw
+        self.max_velocity_roll = max_velocity_roll
+        self.max_velocity_pitch = max_velocity_pitch
+
 
 
     def get_limited_twist(self, twist):
