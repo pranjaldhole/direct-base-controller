@@ -11,7 +11,7 @@ __author__ = 'jsanch'
 import rospy
 import std_msgs.msg
 import geometry_msgs.msg
-import mcr_twist_limiter.limiter as limiter
+import limiter
 
 
 class TwistLimiter(object):
