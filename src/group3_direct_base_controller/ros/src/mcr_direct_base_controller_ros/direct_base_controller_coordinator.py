@@ -21,6 +21,7 @@ from transform_to_pose_converter import TransformToPoseConverter
 from component_wise_pose_error_calculator import ComponentWisePoseErrorCalculator
 from twist_controller import TwistController
 from twist_limiter import TwistLimiter
+from twist_synchronizer import TwistSynchronizer
 
 
 class DirectBaseControllerCoordinator(object):
@@ -35,6 +36,12 @@ class DirectBaseControllerCoordinator(object):
         self.pose_monitor_feedback = None
         self.pose_2 = None
 
+        self.transform_to_pose_converter = TransformToPoseConverter();
+        self.component_wise_pose_error_calculator = ComponentWisePoseErrorCalculator();
+        self.twist_controller = TwistController();
+        self.twist_limiter = TwistLimiter();
+        self.twist_synchronizer = TwistSynchronizer();
+
         # node cycle rate (in hz)
         self.loop_rate = rospy.Rate(rospy.get_param('~loop_rate', 100.0))
 
@@ -44,10 +51,20 @@ class DirectBaseControllerCoordinator(object):
         self.pose_error_monitor_event_in = rospy.Publisher(
             '~pose_error_monitor_event_in', std_msgs.msg.String, latch=True, queue_size=1
         )
+
         self.twist_synchronizer_event_in = rospy.Publisher(
             '~twist_synchronizer_event_in', std_msgs.msg.String, latch=True, queue_size=1
         )
+
         self.base_twist = rospy.Publisher('~twist', geometry_msgs.msg.Twist, queue_size=1)
+
+        self.synchronized_twist = rospy.Publisher('~synchronized_twist', geometry_msgs.msg.TwistStamped, queue_size=5)
+
+        # Setup for component_wise_pose_error_calculator
+        # TODO - publisher should be removed afer pose_error_monitor is merged
+        self.pose_error = rospy.Publisher(
+            '~pose_error', mcr_manipulation_msgs.msg.ComponentWiseCartesianDifference, queue_size=5
+        )
 
         # subscribers
         rospy.Subscriber("~event_in", std_msgs.msg.String, self.event_in_cb)
@@ -55,20 +72,6 @@ class DirectBaseControllerCoordinator(object):
                          self.pose_monitor_feedback_cb)
         rospy.Subscriber('~pose_2', geometry_msgs.msg.PoseStamped, self.pose_2_cb)
 
-        # Setup for component_wise_pose_error_calculator
-        # TODO - publisher should be removed afer pose_error_monitor is merged
-        self.pose_error = rospy.Publisher(
-            '~pose_error', mcr_manipulation_msgs.msg.ComponentWiseCartesianDifference, queue_size=5
-        )
-        # TODO - Remove after twist_synchronizer is merged
-        self.limited_twist = rospy.Publisher(
-            '~limited_twist', geometry_msgs.msg.TwistStamped, queue_size=5
-        )
-
-        self.transform_to_pose_converter = TransformToPoseConverter();
-        self.component_wise_pose_error_calculator = ComponentWisePoseErrorCalculator();
-        self.twist_controller = TwistController();
-        self.twist_limiter = TwistLimiter();
 
     def event_in_cb(self, msg):
         """
@@ -170,8 +173,13 @@ class DirectBaseControllerCoordinator(object):
                 cartesian_velocity = self.twist_controller.get_cartesian_velocity(pose_error)
                 if cartesian_velocity:
                     limited_twist = self.twist_limiter.get_limited_twist(cartesian_velocity)
-                    if limited_twist:
-                        self.limited_twist.publish(limited_twist) # TODO Remove after merging Twist synchronizer
+
+                    synchronized_twist = self.twist_synchronizer.synchronize_twist(limited_twist, pose_error)
+                    if synchronized_twist:
+                        self.synchronized_twist.publish(synchronized_twist)
+                        self.event_out.publish('e_success')
+                    else:
+                        self.event_out.publish('e_failure')
 
         return 'RUNNING'
 
