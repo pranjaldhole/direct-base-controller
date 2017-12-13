@@ -21,7 +21,6 @@ class TransformToPoseConverter(object):
     """
     def __init__(self):
         # params
-        self.event = None
         self.reference_frame = rospy.get_param('~reference_frame', None)
         assert self.reference_frame is not None, "Reference frame must be defined."
         self.target_frame = rospy.get_param('~target_frame', None)
@@ -46,7 +45,7 @@ class TransformToPoseConverter(object):
         between a target frame and the reference frame.
 
         """
-        if self.event != 'e_stop' and self.target_frame and self.reference_frame:
+        if self.target_frame and self.reference_frame:
             converted_pose = geometry_msgs.msg.PoseStamped()
             converted_pose.header.frame_id = self.reference_frame
 
@@ -75,8 +74,6 @@ class TransformToPoseConverter(object):
             except tf.Exception, error:
                 rospy.logwarn("Exception occurred: {0}".format(error))
                 converted_pose = None
-
-            self.event = None
 
             return converted_pose
 
