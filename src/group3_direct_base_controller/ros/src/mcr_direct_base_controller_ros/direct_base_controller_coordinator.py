@@ -189,16 +189,12 @@ class DirectBaseControllerCoordinator(object):
 
         """
         if event == 'start' and not (self.started_components):
-            self.component_wise_pose_error_calculator.monitor_event = 'e_start'
-
             self.pose_error_monitor_event_in.publish('e_start')
             self.twist_synchronizer_event_in.publish('e_start')
 
             self.started_components = True
 
         elif event == 'stop':
-            self.component_wise_pose_error_calculator.monitor_event = 'e_stop'
-
             self.pose_error_monitor_event_in.publish('e_stop')
             self.twist_synchronizer_event_in.publish('e_stop')
 

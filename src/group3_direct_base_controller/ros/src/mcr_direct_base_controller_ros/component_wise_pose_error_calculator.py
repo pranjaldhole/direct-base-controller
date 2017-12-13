@@ -22,8 +22,6 @@ class ComponentWisePoseErrorCalculator(object):
     """
     def __init__(self):
         # params
-        self.monitor_event = None
-        self.event_out = None
         self.pose_1 = None
         self.pose_2 = None
         self.listener = tf.TransformListener()
@@ -48,22 +46,18 @@ class ComponentWisePoseErrorCalculator(object):
     def get_component_wise_pose_error(self, pose_1, pose_2):
         self.pose_1 = pose_1
         self.pose_2 = pose_2
-        if self.monitor_event != 'e_stop' and self.pose_1 and self.pose_2:
+        if self.pose_1 and self.pose_2:
             transformed_pose = self.transform_pose(self.pose_1, self.pose_2)
             if transformed_pose:
                 pose_error = self.calculate_component_wise_pose_error(
                     self.pose_1, transformed_pose, self.linear_offset
                 )
-
-                self.event_out = 'e_success'
                 return pose_error
 
             else:
-                self.event_out = 'e_failure'
                 return None
         else:
             self.reset_component_data()
-            self.event_out = 'e_stopped'
             return None
 
     def transform_pose(self, reference_pose, target_pose):
@@ -105,7 +99,6 @@ class ComponentWisePoseErrorCalculator(object):
         Clears the data of the component.
 
         """
-        self.monitor_event = None
         self.pose_1 = None
         self.pose_2 = None
 
