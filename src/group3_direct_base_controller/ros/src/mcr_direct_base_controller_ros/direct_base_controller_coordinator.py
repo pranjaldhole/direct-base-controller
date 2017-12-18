@@ -26,7 +26,7 @@ from twist_controller import TwistController
 from twist_limiter import TwistLimiter
 from twist_synchronizer import TwistSynchronizer
 import dynamic_reconfigure.server
-import mcr_pose_monitor.cfg.ComponentWisePoseErrorMonitorConfig as ComponentWisePoseErrorMonitorConfig
+import group3_direct_base_controller.cfg.ComponentWisePoseErrorMonitorConfig as ComponentWisePoseErrorMonitorConfig
 
 
 class DirectBaseControllerCoordinator(object):
@@ -68,13 +68,9 @@ class DirectBaseControllerCoordinator(object):
 
         self.base_twist = rospy.Publisher('~twist', geometry_msgs.msg.Twist, queue_size=1)
 
-        self.synchronized_twist = rospy.Publisher('~synchronized_twist', geometry_msgs.msg.TwistStamped, queue_size=5)
+        self.synchronized_twist_pub = rospy.Publisher('~synchronized_twist', geometry_msgs.msg.TwistStamped, queue_size=5)
 
         # Setup for component_wise_pose_error_calculator
-        # TODO - publisher should be removed afer pose_error_monitor is merged
-        self.pose_error = rospy.Publisher(
-            '~pose_error', mcr_manipulation_msgs.msg.ComponentWiseCartesianDifference, self.pose_error_cb
-        )
 
         # subscribers
         rospy.Subscriber("~event_in", std_msgs.msg.String, self.event_in_cb)
@@ -137,7 +133,6 @@ class DirectBaseControllerCoordinator(object):
 
         """
         if self.event == 'e_start':
-            self.send_event_to_components("start")
             self.event = None
             return 'RUNNING'
         else:
@@ -154,7 +149,6 @@ class DirectBaseControllerCoordinator(object):
         """
 
         if self.event == 'e_stop':
-            self.send_event_to_components("stop")
             self.event_out.publish('e_stopped')
             self.event = None
             self.pose_monitor_feedback = None
@@ -168,13 +162,12 @@ class DirectBaseControllerCoordinator(object):
         converted_pose = self.transform_to_pose_converter.get_converted_pose()
         if(converted_pose != None):
             pose_error = self.component_wise_pose_error_calculator.get_component_wise_pose_error(converted_pose, self.pose_2)
-            if isComponentWisePoseErrorWithinThreshold(pose_error):
-                self.send_event_to_components("stop")
+            if self.component_wise_pose_error_monitor.isComponentWisePoseErrorWithinThreshold(pose_error):
                 self.event_out.publish('e_success')
                 self.event = None
                 self.pose_monitor_feedback = None
                 self.started_components = False
-                publish_zero_velocities()
+                self.publish_zero_velocities()
                 return 'INIT'
             else:
                 cartesian_velocity = self.twist_controller.get_cartesian_velocity(pose_error)
@@ -183,7 +176,7 @@ class DirectBaseControllerCoordinator(object):
                     if (limited_twist != None):
                         synchronized_twist = self.twist_synchronizer.synchronize_twist(limited_twist, pose_error)
                         if (synchronized_twist != None):
-                            self.synchronized_twist.publish(synchronized_twist)
+                            self.synchronized_twist_pub.publish(synchronized_twist)
                         #    self.event_out.publish('e_success')
                         #else:
                         #    self.event_out.publish('e_failure')
@@ -196,41 +189,21 @@ class DirectBaseControllerCoordinator(object):
 
         self.base_twist.publish(zero_twist)
 
-    def send_event_to_components(self, event):
-        """
-        Starts or stops the necessary components
-
-        :param event: The event that determines either to start or stop the components.
-        :type event: str
-
-        """
-        if event == 'start' and not (self.started_components):
-            self.transform_to_pose_converter.event = 'e_start'
-            self.component_wise_pose_error_calculator.monitor_event = 'e_start'
-
-            self.pose_error_monitor_event_in.publish('e_start')
-
-            self.started_components = True
-
-        elif event == 'stop':
-            self.transform_to_pose_converter.event = 'e_stop'
-            self.component_wise_pose_error_calculator.monitor_event = 'e_stop'
-
-            self.pose_error_monitor_event_in.publish('e_stop')
-
-            self.started_components = False
-
-def dynamic_reconfigure_cb(self, config, level):
+    def dynamic_reconfigure_cb(self, config, level):
         """
         Obtains an update for the dynamic reconfigurable parameters.
 
         """
-        self.threshold_linear_x = config.threshold_linear_x
-        self.threshold_linear_y = config.threshold_linear_y
-        self.threshold_linear_z = config.threshold_linear_z
-        self.threshold_angular_x = config.threshold_angular_x
-        self.threshold_angular_y = config.threshold_angular_y
-        self.threshold_linear_z = config.threshold_angular_z
+        self.component_wise_pose_error_monitor.set_parameters(config.threshold_linear_x,\
+            config.threshold_linear_y,\
+            config.threshold_linear_z,\
+            config.threshold_angular_x,\
+            config.threshold_angular_y,
+            config.threshold_angular_z)
         return config
 
+def main():
+    rospy.init_node("direct_base_controller", anonymous=True)
+    direct_base_controller_coordinator = DirectBaseControllerCoordinator()
+    direct_base_controller_coordinator.start()
             
