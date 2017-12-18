@@ -173,13 +173,13 @@ class DirectBaseControllerCoordinator(object):
                 cartesian_velocity = self.twist_controller.get_cartesian_velocity(pose_error)
                 if cartesian_velocity:
                     limited_twist = self.twist_limiter.get_limited_twist(cartesian_velocity)
-
-                    synchronized_twist = self.twist_synchronizer.synchronize_twist(limited_twist, pose_error)
-                    if synchronized_twist:
-                        self.synchronized_twist.publish(synchronized_twist)
-                        self.event_out.publish('e_success')
-                    else:
-                        self.event_out.publish('e_failure')
+                    if (limited_twist != None):
+                        synchronized_twist = self.twist_synchronizer.synchronize_twist(limited_twist, pose_error)
+                        if (synchronized_twist != None):
+                            self.synchronized_twist.publish(synchronized_twist)
+                            self.event_out.publish('e_success')
+                        else:
+                            self.event_out.publish('e_failure')
 
         return 'RUNNING'
 

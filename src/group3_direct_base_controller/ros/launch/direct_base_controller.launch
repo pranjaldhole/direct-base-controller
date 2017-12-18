@@ -2,9 +2,7 @@
 <!-- Note: this is a launch file to tune this component for different tasks. -->
 <launch>
     <arg name="cmd_vel_out" default="/cmd_vel" />
-
     <group ns="mcr_navigation/direct_base_controller">
-
         <node pkg="mcr_geometric_relation_monitors" type="component_wise_pose_error_monitor_node" name="pose_error_monitor" output="screen">
 
             <remap from="~pose_error" to="coordinator/pose_error" />
@@ -65,7 +63,5 @@
             <param name="max_velocity_yaw" type="double" value="0.6"/>
             <!-- ############# Parameters for twist_limiter ########### -->
         </node>
-
     </group>
-
 </launch>
