@@ -34,7 +34,6 @@ class TwistSynchronizer(object):
     """
     def __init__(self):
         # Params
-        self.event = None
         self.twist = None
         self.pose_error = None
 
@@ -105,3 +104,11 @@ class TwistSynchronizer(object):
             synchronized_twist.twist.angular.z = sync_velocities[5]
 
         return synchronized_twist
+
+    def reset_component_data(self):
+        """
+        Clears the data of the component.
+
+        """
+        self.twist = None
+        self.pose_error = None
