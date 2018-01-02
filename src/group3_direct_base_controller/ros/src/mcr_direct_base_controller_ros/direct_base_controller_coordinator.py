@@ -177,9 +177,9 @@ class DirectBaseControllerCoordinator(object):
                         synchronized_twist = self.twist_synchronizer.synchronize_twist(limited_twist, pose_error)
                         if (synchronized_twist != None):
                             self.synchronized_twist_pub.publish(synchronized_twist)
-                        #    self.event_out.publish('e_success')
-                        #else:
-                        #    self.event_out.publish('e_failure')
+                            self.event_out.publish('e_success')
+                        else:
+                            self.event_out.publish('e_failure')
                         self.twist_synchronizer.reset_component_data()
 
         return 'RUNNING'
