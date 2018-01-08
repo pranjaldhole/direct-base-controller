@@ -68,8 +68,6 @@ class DirectBaseControllerCoordinator(object):
 
         self.base_twist = rospy.Publisher('~twist', geometry_msgs.msg.Twist, queue_size=1)
 
-        self.synchronized_twist_pub = rospy.Publisher('~synchronized_twist', geometry_msgs.msg.TwistStamped, queue_size=5)
-
         # Setup for component_wise_pose_error_calculator
 
         # subscribers
@@ -176,7 +174,7 @@ class DirectBaseControllerCoordinator(object):
                     if (limited_twist != None):
                         synchronized_twist = self.twist_synchronizer.synchronize_twist(limited_twist, pose_error)
                         if (synchronized_twist != None):
-                            self.synchronized_twist_pub.publish(synchronized_twist)
+                            self.base_twist.publish(synchronized_twist.twist)
                             self.event_out.publish('e_success')
                         else:
                             self.event_out.publish('e_failure')
