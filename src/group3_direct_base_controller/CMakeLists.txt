@@ -8,9 +8,14 @@ find_package(catkin REQUIRED
     rospy
     std_msgs
     mcr_monitoring_msgs
+    dynamic_reconfigure
 )
 
 catkin_python_setup()
+
+generate_dynamic_reconfigure_options(
+  ros/config/ComponentWisePoseErrorMonitor.cfg
+)
 
 catkin_package(
   CATKIN_DEPENDS
@@ -25,6 +30,7 @@ catkin_package(
     mcr_twist_synchronizer
     mcr_manipulation_measurers
     mcr_manipulation_msgs
+    dynamic_reconfigure
 )
 
 include_directories(
