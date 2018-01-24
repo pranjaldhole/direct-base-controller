@@ -12,6 +12,7 @@ import std_msgs.msg
 import geometry_msgs.msg
 import mcr_manipulation_msgs.msg
 import mcr_algorithms.controller.pid_controller as pid_controller
+import dynamic_reconfigure.server
 
 # This value is used as the 'current_value' for the 'pid_controller'
 # from 'mcr_algorithms.controller.pid_controller', since this twist
@@ -52,12 +53,12 @@ class TwistController(object):
         self.p_gain_yaw = p_gain_yaw
 
         # create controllers
-        self.x_controller = pid_controller.p_controller(self.p_gain_x)
-        self.y_controller = pid_controller.p_controller(self.p_gain_y)
-        self.z_controller = pid_controller.p_controller(self.p_gain_z)
-        self.roll_controller = pid_controller.p_controller(self.p_gain_roll)
-        self.pitch_controller = pid_controller.p_controller(self.p_gain_pitch)
-        self.yaw_controller = pid_controller.p_controller(self.p_gain_yaw)
+        # self.x_controller = pid_controller.p_controller(self.p_gain_x)
+        # self.y_controller = pid_controller.p_controller(self.p_gain_y)
+        # self.z_controller = pid_controller.p_controller(self.p_gain_z)
+        # self.roll_controller = pid_controller.p_controller(self.p_gain_roll)
+        # self.pitch_controller = pid_controller.p_controller(self.p_gain_pitch)
+        # self.yaw_controller = pid_controller.p_controller(self.p_gain_yaw)
 
     def get_cartesian_velocity(self, pose_error):
         """
@@ -87,4 +88,3 @@ class TwistController(object):
         cartesian_velocity.twist.angular.z = velocity_yaw
 
         return cartesian_velocity
-

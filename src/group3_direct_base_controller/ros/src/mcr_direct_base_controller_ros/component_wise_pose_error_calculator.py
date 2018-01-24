@@ -10,8 +10,9 @@ __author__ = 'jsanch'
 import rospy
 import std_msgs.msg
 import geometry_msgs.msg
-import mcr_manipulation_msgs.msg
 import tf
+import mcr_manipulation_msgs.msg
+import dynamic_reconfigure.server
 from math import sin, cos, atan2
 
 class ComponentWisePoseErrorCalculator(object):
@@ -36,11 +37,11 @@ class ComponentWisePoseErrorCalculator(object):
         # how long to wait for transform (in seconds)
         self.wait_for_transform = rospy.get_param('~wait_for_transform', 0.1)
 
-    def set_parameters(self, linear_offset, wait_for_transform):
+    def set_parameters(self, wait_for_transform):
         """
         Helper method for dynamic reconfiguration
         """
-        self.linear_offset = linear_offset
+        # self.linear_offset = linear_offset
         self.wait_for_transform = wait_for_transform
 
     def get_component_wise_pose_error(self, pose_1, pose_2):

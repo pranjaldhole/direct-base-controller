@@ -46,7 +46,7 @@ class DirectBaseControllerCoordinator(object):
         self.component_wise_pose_error_calculator = ComponentWisePoseErrorCalculator();
         self.component_wise_pose_error_monitor = ComponentWisePoseErrorMonitor();
         self.feedback = mcr_monitoring_msgs.msg.ComponentWisePoseErrorMonitorFeedback()
-        
+
         self.twist_controller = TwistController();
         self.twist_limiter = TwistLimiter();
         self.twist_synchronizer = TwistSynchronizer();
@@ -123,7 +123,8 @@ class DirectBaseControllerCoordinator(object):
             self.loop_rate.sleep()
 
     def init_state(self):
-        """
+        """import group3_direct_base_controller.cfg.TransformToPoseConverterConfig as TransformToPoseConverterConfig
+
         Executes the INIT state of the state machine.
 
         :return: The updated state.
@@ -197,11 +198,26 @@ class DirectBaseControllerCoordinator(object):
             config.threshold_linear_z,\
             config.threshold_angular_x,\
             config.threshold_angular_y,
-            config.threshold_angular_z)
+            config.threshold_angular_z,
+            )
+        self.component_wise_pose_error_calculator.set_parameters(config.wait_for_transform)
+        self.twist_controller.set_parameters(config.p_gain_x,\
+            config.p_gain_y,\
+            config.p_gain_z,\
+            config.p_gain_roll,\
+            config.p_gain_yaw,\
+            config.p_gain_pitch,\
+            )
+        self.twist_limiter.set_parameters(config.max_velocity_x,\
+            config.max_velocity_y,\
+            config.max_velocity_z,\
+            config.max_velocity_roll,\
+            config.max_velocity_yaw,\
+            config.max_velocity_pitch\
+            )
         return config
 
 def main():
     rospy.init_node("direct_base_controller", anonymous=True)
     direct_base_controller_coordinator = DirectBaseControllerCoordinator()
     direct_base_controller_coordinator.start()
-            
