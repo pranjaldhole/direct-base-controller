@@ -2,11 +2,12 @@
 \begin{frame}{Component wise pose error calculator}
 	\begin{alertblock}{Input}
 	%reference\_frame(odom), target\_frame(base\_link)
-	pose of current position, pose of target position
+	\texttt{current\_pose}: pose of current position.\\
+	\texttt{target\_pose}: pose of target position.
     \end{alertblock}
     
     \begin{alertblock}{Output}
-	difference in six components (three linear and three angular)
+	\texttt{pose\_error}: difference in six pose components (3 linear + 3 angular).
     \end{alertblock}
     
     \begin{alertblock}{Task}
