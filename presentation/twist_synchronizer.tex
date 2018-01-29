@@ -1,0 +1,16 @@
+%-------------------------------------------------
+\begin{frame}{\text{twist\_synchronizer} node}
+\begin{alertblock}{Input}
+\texttt{limited\_twist, pose\_error}
+\end{alertblock}
+
+\begin{alertblock}{Output}
+\texttt{synchronized\_twist}
+\end{alertblock}
+
+\begin{alertblock}{Task}
+Synchronizes the velocities of a twist (represented as a \texttt{geometry\_msgs/TwistStamped} message), such that each component of a Cartesian error (compensated by the twist's velocities) simultaneously reaches zero.
+\end{alertblock}
+\end{frame}
+
+%-------------------------------------------------
