@@ -39,7 +39,7 @@ class TwistSynchronizer(object):
 
         # If True, it also synchronizes the angular and linear velocities.
         # By default, it only synchronizes the linear velocities.
-        self.angular_synchronization = rospy.get_param('~angular_synchronization', False)
+        self.angular_synchronization = rospy.get_param('~angular_synchronization', "true")
 
         # A value to prevent division by near-zero values.
         self.near_zero = rospy.get_param('~near_zero', 0.001)

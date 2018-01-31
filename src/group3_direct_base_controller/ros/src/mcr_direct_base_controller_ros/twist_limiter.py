@@ -29,7 +29,7 @@ class TwistLimiter(object):
         # Maximum angular velocities around the axes X, Y and Z (in radians/second)
         self.max_velocity_roll = rospy.get_param('~max_velocity_roll', 0.1)
         self.max_velocity_pitch = rospy.get_param('~max_velocity_pitch', 0.1)
-        self.max_velocity_yaw = rospy.get_param('~max_velocity_yaw', 0.1)
+        self.max_velocity_yaw = rospy.get_param('~max_velocity_yaw', 0.6)
 
     def set_parameters(self, max_velocity_x, max_velocity_y, max_velocity_z, max_velocity_yaw, max_velocity_pitch, max_velocity_roll):
         """
@@ -75,5 +75,10 @@ class TwistLimiter(object):
         limited_twist.twist.angular.z = limiter.limit_value(
             self.twist.twist.angular.z, self.max_velocity_yaw
         )
-
+        # limited_twist.twist.angular.z = self.twist.twist.angular.z
+        rospy.loginfo("actual {0}".format( self.twist.twist.angular.z))
+        rospy.loginfo("max {0}".format( self.max_velocity_yaw))
+        rospy.loginfo("final {0}".format( limited_twist.twist.angular.z))
+        # rospy.loginfo("max", self.max_velocity_yaw)
+        # rospy.loginfo("final", limited_twist.twist.angular.z)
         return limited_twist

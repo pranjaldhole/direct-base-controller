@@ -170,8 +170,10 @@ class DirectBaseControllerCoordinator(object):
                 return 'INIT'
             else:
                 cartesian_velocity = self.twist_controller.get_cartesian_velocity(pose_error)
+                rospy.loginfo(cartesian_velocity)
                 if cartesian_velocity:
                     limited_twist = self.twist_limiter.get_limited_twist(cartesian_velocity)
+                    rospy.loginfo(limited_twist)
                     if (limited_twist != None):
                         synchronized_twist = self.twist_synchronizer.synchronize_twist(limited_twist, pose_error)
                         if (synchronized_twist != None):
@@ -211,8 +213,8 @@ class DirectBaseControllerCoordinator(object):
         self.twist_limiter.set_parameters(config.max_velocity_x,\
             config.max_velocity_y,\
             config.max_velocity_z,\
-            config.max_velocity_roll,\
             config.max_velocity_yaw,\
+            config.max_velocity_roll,\
             config.max_velocity_pitch\
             )
         return config
