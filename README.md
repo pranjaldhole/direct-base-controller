@@ -1,5 +1,5 @@
-# Software Development Project
-## Direct Base Controller (DBC)
+# Direct Base Controller (DBC)
+## Software Development Project
 
 ### Direct Base Controller: Merged Nodes
 
@@ -29,7 +29,7 @@
 	roslaunch group3_direct_base_controller event_gui.launch
 	```
 
-##### To Do: Merge Nodes
+#### To Do: Merge Nodes
 
 + [x] mcr_direct_base_controller:direct_base_controller_coordinator_node
 + [x] mcr_common_converters:transform_to_pose_converter_node
@@ -39,6 +39,6 @@
 + [x] mcr_twist_limiter:twist_limiter_node
 + [x] mcr_twist_synchronizer:twist_synchronizer_node
 
-##### Nodes communication
+#### Nodes communication
 To check how nodes communicate with each other, run the simulation and run `rqt_graph`.
 The GUI will show you a graph of how nodes talk to each other.
